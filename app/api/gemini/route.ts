@@ -39,15 +39,15 @@ export async function POST(req: Request) {
             console.warn(`Primary model ${modelName} failed:`, primaryError.message);
 
             // Step 1 Fallback: try Gemini 1.5 Flash (often has best quotas)
-            const fallback1 = 'gemini-1.5-flash';
+            const fallback1: string = 'gemini-1.5-flash';
             if (modelName !== fallback1) {
                 try {
                     console.log(`Falling back to ${fallback1}...`);
                     const fb1Model = genAI.getGenerativeModel({ model: fallback1 });
-                    const fb1Result = await fb1Model.generateContent(prompt);
-                    const fb1Response = await fb1Result.response;
+                    const fbResult = await fb1Model.generateContent(prompt);
+                    const fbResponse = await fbResult.response;
                     return NextResponse.json({
-                        text: fb1Response.text(),
+                        text: fbResponse.text(),
                         note: `Original model (${modelName}) hit quota/error. Successfully used ${fallback1}.`
                     });
                 } catch (fb1Error: any) {
@@ -56,8 +56,8 @@ export async function POST(req: Request) {
             }
 
             // Step 2 Fallback: try Gemini 2.0 Flash
-            const fallback2 = 'gemini-2.0-flash';
-            if (modelName !== fallback2 && fallback1 !== fallback2) {
+            const fallback2: string = 'gemini-2.0-flash';
+            if (modelName !== fallback2 && fallback1 !== (fallback2 as string)) {
                 try {
                     console.log(`Falling back to ${fallback2}...`);
                     const fb2Model = genAI.getGenerativeModel({ model: fallback2 });
