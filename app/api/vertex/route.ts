@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { prompt, imageBase64, modelId } = body;
+        const { prompt, imageBase64, images, modelId } = body;
 
         // Use environment variables or fallback values
         const PROJECT_ID = process.env.GCP_PROJECT_ID || 'tilda-3-485901';
@@ -24,7 +24,20 @@ export async function POST(req: Request) {
 
         let parts: any[] = [{ text: prompt }];
 
-        if (imageBase64) {
+        // Handle multiple images (preferred for Banana Pro)
+        if (images && Array.isArray(images)) {
+            images.forEach((img: string) => {
+                const cleanBase64 = img.replace(/^data:image\/\w+;base64,/, "");
+                parts.push({
+                    inlineData: {
+                        mimeType: "image/png",
+                        data: cleanBase64
+                    }
+                });
+            });
+        }
+        // Fallback for single image
+        else if (imageBase64) {
             const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
             parts.push({
                 inlineData: {
