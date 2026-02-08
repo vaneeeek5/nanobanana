@@ -38,19 +38,40 @@ export async function POST(req: Request) {
         } catch (primaryError: any) {
             console.warn(`Primary model ${modelName} failed:`, primaryError.message);
 
-            // If primary fails (404 Not Found or 429), try stable fallback
-            const fallbackModelId = 'gemini-2.0-flash';
-            if (modelName !== fallbackModelId) {
-                console.log(`Falling back to ${fallbackModelId}...`);
-                const fallbackModel = genAI.getGenerativeModel({ model: fallbackModelId });
-                const fallbackResult = await fallbackModel.generateContent(prompt);
-                const fallbackResponse = await fallbackResult.response;
-                const text = fallbackResponse.text();
-                return NextResponse.json({
-                    text,
-                    note: `Original model (${modelName}) was hit by quota or error, used fallback (${fallbackModelId}).`
-                });
+            // Step 1 Fallback: try Gemini 1.5 Flash (often has best quotas)
+            const fallback1 = 'gemini-1.5-flash';
+            if (modelName !== fallback1) {
+                try {
+                    console.log(`Falling back to ${fallback1}...`);
+                    const fb1Model = genAI.getGenerativeModel({ model: fallback1 });
+                    const fb1Result = await fb1Model.generateContent(prompt);
+                    const fb1Response = await fb1Result.response;
+                    return NextResponse.json({
+                        text: fb1Response.text(),
+                        note: `Original model (${modelName}) hit quota/error. Successfully used ${fallback1}.`
+                    });
+                } catch (fb1Error: any) {
+                    console.warn(`${fallback1} failed too:`, fb1Error.message);
+                }
             }
+
+            // Step 2 Fallback: try Gemini 2.0 Flash
+            const fallback2 = 'gemini-2.0-flash';
+            if (modelName !== fallback2 && fallback1 !== fallback2) {
+                try {
+                    console.log(`Falling back to ${fallback2}...`);
+                    const fb2Model = genAI.getGenerativeModel({ model: fallback2 });
+                    const fb2Result = await fb2Model.generateContent(prompt);
+                    const fb2Response = await fb2Result.response;
+                    return NextResponse.json({
+                        text: fb2Response.text(),
+                        note: `Multiple models failed, used ${fallback2} as final backup.`
+                    });
+                } catch (fb2Error: any) {
+                    console.error('All fallbacks failed:', fb2Error.message);
+                }
+            }
+
             throw primaryError;
         }
 
