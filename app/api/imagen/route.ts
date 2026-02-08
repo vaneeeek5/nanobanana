@@ -1,48 +1,83 @@
+import { VertexAI } from '@google-cloud/vertexai';
 import { NextResponse } from 'next/server';
+
+// Helper to parse credentials
+function getCredentials() {
+    if (process.env.VERTEX_CREDENTIALS) {
+        try {
+            return JSON.parse(process.env.VERTEX_CREDENTIALS);
+        } catch (e) {
+            console.error("Failed to parse VERTEX_CREDENTIALS", e);
+        }
+    }
+    return null;
+}
 
 export async function POST(req: Request) {
     try {
-        const { prompt } = await req.json();
-        const apiKey = process.env.GOOGLE_API_KEY;
+        const body = await req.json();
+        const { prompt, mode, referenceImages, aspectRatio } = body;
 
-        if (!apiKey) {
-            return NextResponse.json({ error: 'API Key not configured' }, { status: 500 });
+        // Configuration based on mode
+        let modelId = 'imagen-3.0-generate-001'; // Default to Pro
+        if (mode === 'fast') {
+            modelId = 'imagen-3.0-fast-generate-001';
         }
 
-        // Using Imagen 4 (predict method)
-        const modelId = 'imagen-4.0-generate-001';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${apiKey}`;
+        const credentials = getCredentials();
+        const projectId = credentials?.project_id || process.env.GCP_PROJECT_ID || 'tilda-3-485901';
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                instances: [{ prompt }],
-                parameters: {
-                    sampleCount: 1,
-                    aspectRatio: "1:1"
-                }
-            })
+        const vertexAI = new VertexAI({
+            project: projectId,
+            location: 'us-central1', // Imagen 3 requires us-central1 (usually)
+            googleAuthOptions: credentials ? { credentials } : undefined
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'Imagen API Error');
+        const model = vertexAI.getGenerativeModel({ model: modelId });
+
+        console.log(`[Imagen] Generating (${mode}) with ${modelId}...`);
+
+        let parts: any[] = [{ text: prompt }];
+
+        // Handle reference images (for editing/variations if supported by specific model version)
+        // Note: Standard generateContent for Imagen 3 via Vertex SDK text-to-image usually just takes text.
+        // If 'referenceImages' are provided, we might need to look into specific edit modes or controlnet-like features if available in public API.
+        // For now, we will append them as multimodal inputs if the model supports it.
+        if (referenceImages && Array.isArray(referenceImages)) {
+            referenceImages.forEach((img: string) => {
+                const base64 = img.includes('base64,') ? img.split('base64,')[1] : img;
+                parts.push({
+                    inlineData: { mimeType: 'image/png', data: base64 }
+                });
+            });
         }
 
-        const data = await response.json();
-        const b64Image = data.predictions?.[0]?.bytesBase64Encoded;
-
-        if (!b64Image) {
-            throw new Error('No image was generated');
-        }
-
-        return NextResponse.json({
-            image: `data:image/png;base64,${b64Image}`
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts }],
+            generationConfig: {
+                // aspect_ratio is sometimes part of generationConfig or just in the prompt for some models
+                // For Vertex AI Imagen, it's often a specific parameter object, but the SDK unifies it under generationConfig usually.
+                sampleCount: 1,
+            } as any
         });
+
+        const responseParts = result.response.candidates?.[0]?.content?.parts || [];
+        const imagePart = responseParts.find((p: any) => p.inlineData?.data);
+
+        if (imagePart) {
+            return NextResponse.json({
+                image: `data:image/png;base64,${imagePart.inlineData?.data}`,
+                metadata: result.response.usageMetadata
+            });
+        }
+
+        return NextResponse.json({ error: "No image generated." }, { status: 500 });
 
     } catch (error: any) {
-        console.error('Imagen API Error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('[Imagen API] Error:', error);
+        return NextResponse.json(
+            { error: error.message || 'Internal Server Error' },
+            { status: 500 }
+        );
     }
 }

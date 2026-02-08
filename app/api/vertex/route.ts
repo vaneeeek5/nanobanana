@@ -6,72 +6,78 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { prompt, imageBase64, images, modelId } = body;
 
-        // Use environment variables or fallback values
-        const PROJECT_ID = process.env.GCP_PROJECT_ID || 'tilda-3-485901';
-        const targetModel = (modelId as string) || 'gemini-1.5-pro';
+        let googleAuthOptions;
+        let projectId = process.env.GCP_PROJECT_ID || 'tilda-3-485901';
 
-        // Gemini 3 Preview is often only in us-central1
-        const LOCATION = targetModel.includes('preview') || targetModel.includes('gemini-3') ? 'us-central1' : 'europe-west1';
+        // Check for Service Account JSON in environment variables
+        if (process.env.VERTEX_CREDENTIALS) {
+            try {
+                const credentials = JSON.parse(process.env.VERTEX_CREDENTIALS);
+                googleAuthOptions = { credentials };
+                projectId = credentials.project_id || projectId;
+                console.log(`Using Service Account Credentials for project: ${projectId}`);
+            } catch (e) {
+                console.error("Failed to parse VERTEX_CREDENTIALS JSON", e);
+            }
+        }
+
+        const targetModel = (modelId as string) || 'imagen-3.0-generate-001';
+
+        // Location logic: Imagen and newer models often require specific regions like us-central1
+        const LOCATION = 'us-central1';
 
         const vertexAI = new VertexAI({
-            project: PROJECT_ID,
-            location: LOCATION
+            project: projectId,
+            location: LOCATION,
+            googleAuthOptions: googleAuthOptions
         });
 
         const model = vertexAI.getGenerativeModel({
             model: targetModel
         });
 
+        // Prepare content parts
         let parts: any[] = [{ text: prompt }];
 
-        // Handle multiple images (preferred for Banana Pro)
         if (images && Array.isArray(images)) {
             images.forEach((img: string) => {
                 const cleanBase64 = img.replace(/^data:image\/\w+;base64,/, "");
                 parts.push({
-                    inlineData: {
-                        mimeType: "image/png",
-                        data: cleanBase64
-                    }
+                    inlineData: { mimeType: "image/png", data: cleanBase64 }
                 });
             });
-        }
-        // Fallback for single image
-        else if (imageBase64) {
+        } else if (imageBase64) {
             const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
             parts.push({
-                inlineData: {
-                    mimeType: "image/png",
-                    data: cleanBase64
-                }
+                inlineData: { mimeType: "image/png", data: cleanBase64 }
             });
         }
+
+        console.log(`[Vertex AI] Generating with ${targetModel} in ${LOCATION}...`);
 
         const result = await model.generateContent({
             contents: [{ role: 'user', parts }]
         });
 
         const responseParts = result.response.candidates?.[0]?.content?.parts || [];
-        const imagePart = responseParts.find((p: any) => p.inlineData?.data);
 
-        if (imagePart && imagePart.inlineData) {
+        // Check for image data (Imagen specific response structure might vary but usually inlineData)
+        const imagePart = responseParts.find((p: any) => p.inlineData?.data);
+        if (imagePart) {
             return NextResponse.json({
-                image: `data:image/png;base64,${imagePart.inlineData.data}`,
-                text: "Image generated successfully via Vertex AI."
+                image: `data:image/png;base64,${imagePart.inlineData?.data}`,
+                text: "Image generated via Vertex AI (Imagen 3)."
             });
         }
 
-        // Fallback to text if No image part but text exists
-        const textResponse = result.response.candidates?.[0]?.content?.parts?.find((p: any) => p.text)?.text;
-
-        if (textResponse) {
-            return NextResponse.json({ text: textResponse });
-        }
-
-        return NextResponse.json({ error: "No content returned from Vertex AI" }, { status: 500 });
+        const textResponse = responseParts.find((p: any) => p.text)?.text;
+        return NextResponse.json({
+            text: textResponse || "No content returned.",
+            note: "Authorized via Service Account JSON."
+        });
 
     } catch (error: any) {
-        console.error('Vertex AI Error:', error);
+        console.error('[Vertex AI] Error:', error);
         return NextResponse.json(
             { error: error.message || 'Internal Server Error' },
             { status: 500 }
