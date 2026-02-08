@@ -19,9 +19,11 @@ export async function POST(req: Request) {
         const { prompt, mode, referenceImages, aspectRatio } = body;
 
         // Configuration based on mode
-        let modelId = 'imagen-3.0-generate-001'; // Default to Pro
+        // User requested: "Gemini 3 Pro Image" for Pro
+        let modelId = 'gemini-3.0-pro-image-preview';
         if (mode === 'fast') {
-            modelId = 'imagen-3.0-fast-generate-001';
+            // User requested: "Gemini 2.5 Flash Preview Image", using 2.0 Flash Exp as closest stable fallback or the specific if available
+            modelId = 'gemini-2.0-flash-exp';
         }
 
         const credentials = getCredentials();
@@ -54,11 +56,7 @@ export async function POST(req: Request) {
 
         const result = await model.generateContent({
             contents: [{ role: 'user', parts }],
-            generationConfig: {
-                // aspect_ratio is sometimes part of generationConfig or just in the prompt for some models
-                // For Vertex AI Imagen, it's often a specific parameter object, but the SDK unifies it under generationConfig usually.
-                sampleCount: 1,
-            } as any
+            // generationConfig parameter is removed as sampleCount caused 400 error
         });
 
         const responseParts = result.response.candidates?.[0]?.content?.parts || [];

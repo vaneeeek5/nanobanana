@@ -26,7 +26,8 @@ export async function POST(req: Request) {
         }
 
         const LOCATION = 'us-central1';
-        const MODEL = 'veo-001'; // Or veo-2.0-generate-001 if available
+        // Updated based on user screenshot
+        const MODEL = 'veo-3.0-generate-001';
 
         const vertexAI = new VertexAI({
             project: projectId,
