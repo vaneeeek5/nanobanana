@@ -12,7 +12,8 @@
         "next": "15.1.7",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "@google/generative-ai": "^0.21.0"
+        "@google/generative-ai": "^0.21.0",
+        "@google-cloud/vertexai": "^1.8.0"
     },
     "devDependencies": {
         "@types/node": "^20.17.10",
