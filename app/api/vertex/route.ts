@@ -8,8 +8,10 @@ export async function POST(req: Request) {
 
         // Use environment variables or fallback values
         const PROJECT_ID = process.env.GCP_PROJECT_ID || 'tilda-3-485901';
-        const LOCATION = 'europe-west1';
-        const MODEL = modelId || 'gemini-2.5-flash-image';
+        const targetModel = (modelId as string) || 'gemini-1.5-pro';
+
+        // Gemini 3 Preview is often only in us-central1
+        const LOCATION = targetModel.includes('preview') || targetModel.includes('gemini-3') ? 'us-central1' : 'europe-west1';
 
         const vertexAI = new VertexAI({
             project: PROJECT_ID,
@@ -17,7 +19,7 @@ export async function POST(req: Request) {
         });
 
         const model = vertexAI.getGenerativeModel({
-            model: MODEL
+            model: targetModel
         });
 
         let parts: any[] = [{ text: prompt }];
@@ -57,8 +59,9 @@ export async function POST(req: Request) {
 
     } catch (error: any) {
         console.error('Vertex AI Error:', error);
-        return NextResponse.next({
-            status: 500,
-        });
+        return NextResponse.json(
+            { error: error.message || 'Internal Server Error' },
+            { status: 500 }
+        );
     }
 }

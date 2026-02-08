@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        let modelName = modelId || 'gemini-3-pro-image-preview';
+        let modelName = modelId || 'gemini-1.5-flash';
         let model = genAI.getGenerativeModel({ model: modelName });
 
         try {

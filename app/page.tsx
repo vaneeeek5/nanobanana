@@ -23,15 +23,20 @@ export default function Home() {
     const [appMode, setAppMode] = useState<AppMode>('ai-studio-discovery');
 
     const PRESET_MODELS = [
+        { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Next-Gen)', description: 'Fastest reasoning model' },
+        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Most Capable)', description: 'Best for complex logic' },
+        { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Efficient)', description: 'Balanced speed and quality' }
+    ];
+
+    const VERTEX_PRESET_MODELS = [
         { id: 'gemini-3-pro-image-preview', name: 'Gemini 3 Pro (Preview)', description: 'Next-gen multimodal preview' },
-        { id: 'gemini-2.5-flash-image', name: 'Gemini 2.5 Flash', description: 'Fast, multimodal & image-gen' },
-        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', description: 'State-of-the-art reasoning' },
-        { id: 'gemini-1.0-pro', name: 'Gemini 1.0 Pro', description: 'Stable balanced performance' }
+        { id: 'gemini-2.0-flash-exp', name: 'Gemini 2.0 Flash (Cloud)', description: 'Cloud-native performance' },
+        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', description: 'Production reasoning' }
     ];
 
     const [vertexPrompt, setVertexPrompt] = useState('');
-    const [vertexSelectedModel, setVertexSelectedModel] = useState('gemini-2.5-flash-image');
-    const [presetSelectedModel, setPresetSelectedModel] = useState('gemini-2.5-flash-image');
+    const [vertexSelectedModel, setVertexSelectedModel] = useState('gemini-1.5-pro');
+    const [presetSelectedModel, setPresetSelectedModel] = useState('gemini-1.5-pro');
     const [vertexImageBase64, setVertexImageBase64] = useState<string | null>(null);
     const [vertexResult, setVertexResult] = useState<string | null>(null);
     const [vertexLoading, setVertexLoading] = useState(false);
@@ -439,7 +444,7 @@ export default function Home() {
                                 onChange={(e) => setVertexSelectedModel(e.target.value)}
                                 className="w-full p-4 bg-gray-900/50 border border-purple-900/20 rounded-2xl text-white text-sm focus:border-purple-500 transition-all"
                             >
-                                {PRESET_MODELS.map(m => (
+                                {VERTEX_PRESET_MODELS.map(m => (
                                     <option key={m.id} value={m.id}>{m.name}</option>
                                 ))}
                             </select>
