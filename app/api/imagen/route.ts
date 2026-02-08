@@ -19,11 +19,10 @@ export async function POST(req: Request) {
         const { prompt, mode, referenceImages, aspectRatio } = body;
 
         // Configuration based on mode
-        // User requested: "Gemini 3 Pro Image" for Pro
-        let modelId = 'gemini-3.0-pro-image-preview';
+        // Falling back to standard public IDs to avoid 404s
+        let modelId = 'imagen-3.0-generate-001';
         if (mode === 'fast') {
-            // User requested: "Gemini 2.5 Flash Preview Image", using 2.0 Flash Exp as closest stable fallback or the specific if available
-            modelId = 'gemini-2.0-flash-exp';
+            modelId = 'imagen-3.0-fast-generate-001';
         }
 
         const credentials = getCredentials();

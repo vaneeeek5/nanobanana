@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-// --- ICONS ---
-const IconImage = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
-const IconVideo = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>;
-const IconSparkles = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>;
-const IconUpload = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>;
+// --- ICONS (Lucide-style simple SVGs) ---
+const IconImage = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>;
+const IconVideo = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8Z" /><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></svg>;
+const IconSparkles = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" /></svg>;
+const IconUpload = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>;
+const IconX = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>;
+const IconZap = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>;
+const IconStar = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>;
 
 export default function Home() {
     // --- APP STATE ---
@@ -116,230 +119,207 @@ export default function Home() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#0a0a0b] text-zinc-100 font-sans selection:bg-white/20">
+        <div className="flex h-screen w-full bg-[#09090b] text-zinc-100 overflow-hidden font-sans selection:bg-white/10">
 
-            {/* TOP NAVIGATION */}
-            <header className="border-b border-white/5 bg-[#0a0a0b]/80 backdrop-blur-xl sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="w-5 h-5 bg-white rounded-md flex items-center justify-center">
-                            <div className="w-2 h-2 bg-black rounded-full"></div>
-                        </div>
-                        <span className="font-semibold text-sm tracking-tight text-zinc-300">Gemini Studio</span>
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-white/5 text-zinc-500 border border-white/5">PRO</span>
+            {/* SIDEBAR */}
+            <aside className="w-[320px] flex-shrink-0 flex flex-col border-r border-[#27272a] bg-[#09090b] overflow-y-auto">
+
+                {/* Header / Brand */}
+                <div className="p-4 border-b border-[#27272a] flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                        <IconSparkles />
                     </div>
+                    <div>
+                        <h1 className="text-sm font-bold tracking-tight text-white">Gemini Studio</h1>
+                        <p className="text-[10px] text-zinc-500 font-medium">Vertex AI Laboratory</p>
+                    </div>
+                </div>
 
-                    <div className="flex bg-white/5 p-0.5 rounded-lg border border-white/5">
+                {/* Main Controls Container */}
+                <div className="p-4 flex flex-col gap-6">
+
+                    {/* Studio Mode Switcher */}
+                    <div className="bg-[#18181b] p-1 rounded-lg flex border border-[#27272a]">
                         <button
                             onClick={() => setStudioMode('image')}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${studioMode === 'image' ? 'bg-[#151516] text-white shadow-sm ring-1 ring-white/10' : 'text-zinc-500 hover:text-zinc-300'}`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-medium rounded-md transition-all ${studioMode === 'image' ? 'bg-[#27272a] text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                         >
                             <IconImage />
-                            Nano Banana
+                            Image
                         </button>
                         <button
                             onClick={() => setStudioMode('video')}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${studioMode === 'video' ? 'bg-[#151516] text-white shadow-sm ring-1 ring-white/10' : 'text-zinc-500 hover:text-zinc-300'}`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-medium rounded-md transition-all ${studioMode === 'video' ? 'bg-[#27272a] text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                         >
                             <IconVideo />
-                            Veo
+                            Video
                         </button>
                     </div>
 
-                    <div className="w-20"></div> {/* Spacer for balance */}
-                </div>
-            </header>
-
-            <main className="flex-1 max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8">
-
-                {/* --- LEFT PANEL: CONTROLS --- */}
-                <div className="flex flex-col gap-6 animate-in slide-in-from-left-4 duration-500 ease-out">
-
-                    {/* MODE SELECTOR (SUB-TABS) */}
-                    <div className="space-y-4">
-                        <label className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Configuration</label>
-
-                        {studioMode === 'image' ? (
-                            <div className="grid grid-cols-2 gap-2">
-                                <button onClick={() => setImageModel('fast')} className={`p-3 rounded-lg border text-left transition-all ${imageModel === 'fast' ? 'bg-zinc-900 border-zinc-700 text-white' : 'border-zinc-800 text-zinc-500 hover:bg-zinc-900/50'}`}>
-                                    <div className="text-xs font-medium mb-0.5">Nano Banana</div>
-                                    <div className="text-[10px] opacity-60">Gemini 2.5 Flash</div>
-                                </button>
-                                <button onClick={() => setImageModel('pro')} className={`p-3 rounded-lg border text-left transition-all ${imageModel === 'pro' ? 'bg-zinc-900 border-zinc-700 text-white' : 'border-zinc-800 text-zinc-500 hover:bg-zinc-900/50'}`}>
-                                    <div className="text-xs font-medium mb-0.5">Nano Banana PRO</div>
-                                    <div className="text-[10px] opacity-60">Gemini 3 Pro Image</div>
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col gap-1 bg-zinc-900/30 p-1 rounded-lg border border-white/5">
-                                {(['text', 'image', 'interpolation'] as const).map(m => (
-                                    <button
-                                        key={m}
-                                        onClick={() => setVideoMode(m)}
-                                        className={`px-3 py-2 text-xs font-medium rounded-md text-left transition-all ${videoMode === m ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
-                                    >
-                                        {m === 'text' && 'Text to Video'}
-                                        {m === 'image' && 'Image to Video'}
-                                        {m === 'interpolation' && 'Frame Interpolation'}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* PROMPT AREA */}
-                    <div className="space-y-3 flex-1 flex flex-col">
-                        <label className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider flex justify-between">
-                            Prompt
-                            <span className="text-zinc-600">REQUIRED</span>
-                        </label>
-                        <textarea
-                            value={studioMode === 'image' ? imagePrompt : videoPrompt}
-                            onChange={e => studioMode === 'image' ? setImagePrompt(e.target.value) : setVideoPrompt(e.target.value)}
-                            placeholder={studioMode === 'image' ? "Describe the image you want to generate..." : "Describe the camera movement, subject, and lighting..."}
-                            className="w-full flex-1 min-h-[160px] bg-[#121214] border border-white/10 rounded-xl p-4 text-sm text-zinc-200 placeholder:text-zinc-700 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all resize-none shadow-inner"
-                        />
-                    </div>
-
-                    {/* ATTACHMENTS */}
-                    <div className="space-y-3">
-                        <label className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider flex justify-between">
-                            Context Inputs
-                            <span className="text-zinc-600">{studioMode === 'image' ? `${referenceImages.length}/3` : 'OPTIONAL'}</span>
-                        </label>
+                    {/* DYNAMIC CONFIGURATION */}
+                    <div className="flex flex-col gap-4">
 
                         {studioMode === 'image' && (
-                            <div className="grid grid-cols-4 gap-2">
-                                {referenceImages.map((img, i) => (
-                                    <div key={i} className="aspect-square rounded-lg overflow-hidden border border-white/10 relative group">
-                                        <img src={img} className="w-full h-full object-cover" />
-                                        <button onClick={() => setReferenceImages(prev => prev.filter((_, idx) => idx !== i))} className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-xs">✕</button>
-                                    </div>
-                                ))}
-                                {referenceImages.length < 3 && (
-                                    <label className="aspect-square rounded-lg border border-dashed border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/50 transition-all flex flex-col items-center justify-center cursor-pointer text-zinc-600 hover:text-zinc-400">
-                                        <IconUpload />
-                                        <input type="file" accept="image/*" multiple onChange={handleRefImageUpload} className="hidden" />
-                                    </label>
-                                )}
+                            <div className="flex flex-col gap-3">
+                                <label className="text-[10px] uppercase font-semibold text-zinc-500 tracking-wider">Model</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button onClick={() => setImageModel('fast')} className={`p-3 rounded-lg border text-left transition-all relative overflow-hidden group ${imageModel === 'fast' ? 'bg-[#18181b] border-white/20' : 'border-[#27272a] hover:bg-[#18181b] text-zinc-500'}`}>
+                                        <div className="flex items-center gap-2 mb-1 text-xs font-semibold text-zinc-200"><IconZap /> Fast</div>
+                                        <div className="text-[10px] text-zinc-500 leading-tight">Gemini 2.5</div>
+                                    </button>
+                                    <button onClick={() => setImageModel('pro')} className={`p-3 rounded-lg border text-left transition-all relative overflow-hidden group ${imageModel === 'pro' ? 'bg-[#18181b] border-white/20' : 'border-[#27272a] hover:bg-[#18181b] text-zinc-500'}`}>
+                                        <div className="flex items-center gap-2 mb-1 text-xs font-semibold text-zinc-200"><IconStar /> Pro</div>
+                                        <div className="text-[10px] text-zinc-500 leading-tight">Gemini 3.0</div>
+                                    </button>
+                                </div>
                             </div>
                         )}
 
-                        {studioMode === 'video' && videoMode !== 'text' && (
-                            <div className="space-y-2">
-                                {videoMode === 'image' && (
-                                    <div className="border border-dashed border-zinc-800 rounded-lg p-2 hover:bg-zinc-900/30 transition-all text-center">
-                                        {videoInputImage ? (
-                                            <div className="relative group">
-                                                <img src={videoInputImage} className="h-32 w-full object-cover rounded-md" />
-                                                <button onClick={() => setVideoInputImage(null)} className="absolute top-2 right-2 bg-black/80 p-1 rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
-                                            </div>
-                                        ) : (
-                                            <label className="cursor-pointer block py-8 text-zinc-600 text-xs hover:text-zinc-400">
-                                                Upload Source Image
-                                                <input type="file" accept="image/*" onChange={(e) => handleVideoImageUpload(setVideoInputImage, e)} className="hidden" />
+                        {studioMode === 'video' && (
+                            <div className="flex flex-col gap-3">
+                                <label className="text-[10px] uppercase font-semibold text-zinc-500 tracking-wider">Mode</label>
+                                <div className="flex flex-col gap-1">
+                                    {['text', 'image', 'interpolation'].map(m => (
+                                        <button
+                                            key={m}
+                                            onClick={() => setVideoMode(m as any)}
+                                            className={`px-3 py-2 text-xs text-left rounded-md border transition-all ${videoMode === m ? 'bg-[#18181b] border-white/10 text-white' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
+                                        >
+                                            {m === 'text' && 'Text to Video'}
+                                            {m === 'image' && 'Image to Video'}
+                                            {m === 'interpolation' && 'Frame Interpolation'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PROMPT INPUT */}
+                        <div className="flex flex-col gap-3">
+                            <label className="text-[10px] uppercase font-semibold text-zinc-500 tracking-wider">Prompt</label>
+                            <textarea
+                                value={studioMode === 'image' ? imagePrompt : videoPrompt}
+                                onChange={e => studioMode === 'image' ? setImagePrompt(e.target.value) : setVideoPrompt(e.target.value)}
+                                placeholder="Describe your vision..."
+                                className="w-full h-32 bg-[#18181b] border border-[#27272a] rounded-lg p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500/50 transition-colors resize-none leading-relaxed"
+                            />
+                        </div>
+
+                        {/* UPLOAD / CONTEXT */}
+                        <div className="flex flex-col gap-3">
+                            <div className="flex justify-between items-end">
+                                <label className="text-[10px] uppercase font-semibold text-zinc-500 tracking-wider">References</label>
+                                <span className="text-[10px] text-zinc-600 font-mono">{studioMode === 'image' ? `${referenceImages.length}/3` : 'OPTIONAL'}</span>
+                            </div>
+
+                            {/* Image Studio Uploads */}
+                            {studioMode === 'image' && (
+                                <div className="grid grid-cols-3 gap-2">
+                                    {referenceImages.map((img, i) => (
+                                        <div key={i} className="aspect-square rounded-md bg-[#18181b] border border-[#27272a] relative group overflow-hidden">
+                                            <img src={img} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                            <button onClick={() => setReferenceImages(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-0.5 right-0.5 bg-black/50 p-0.5 rounded text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <IconX />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {referenceImages.length < 3 && (
+                                        <label className="aspect-square rounded-md border border-dashed border-[#27272a] hover:border-zinc-500 hover:bg-[#18181b] flex flex-col items-center justify-center cursor-pointer transition-all text-zinc-600 hover:text-zinc-400 gap-1">
+                                            <IconUpload />
+                                            <input type="file" multiple accept="image/*" className="hidden" onChange={handleRefImageUpload} />
+                                        </label>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Video Studio Uploads */}
+                            {studioMode === 'video' && videoMode !== 'text' && (
+                                <div className="space-y-2">
+                                    {videoMode === 'image' && !videoInputImage && (
+                                        <label className="w-full h-20 border border-dashed border-[#27272a] rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#18181b] hover:border-zinc-500 text-zinc-600 hover:text-zinc-400">
+                                            <span className="text-[10px] font-medium">Upload Source</span>
+                                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleVideoImageUpload(setVideoInputImage, e)} />
+                                        </label>
+                                    )}
+                                    {videoInputImage && (
+                                        <div className="relative rounded-lg overflow-hidden border border-[#27272a] group">
+                                            <img src={videoInputImage} className="w-full h-32 object-cover" />
+                                            <button onClick={() => setVideoInputImage(null)} className="absolute top-2 right-2 bg-black/50 p-1 rounded text-white opacity-0 group-hover:opacity-100"><IconX /></button>
+                                        </div>
+                                    )}
+
+                                    {videoMode === 'interpolation' && (
+                                        <div className="flex gap-2">
+                                            <label className="flex-1 h-16 border border-dashed border-[#27272a] rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#18181b] hover:border-zinc-500 text-zinc-600 hover:text-zinc-400 relative overflow-hidden">
+                                                {videoStartFrame ? <img src={videoStartFrame} className="w-full h-full object-cover" /> : <span className="text-[10px]">Start</span>}
+                                                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleVideoImageUpload(setVideoStartFrame, e)} />
                                             </label>
-                                        )}
-                                    </div>
-                                )}
-                                {videoMode === 'interpolation' && (
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {/* Start Frame */}
-                                        <div className="border border-dashed border-zinc-800 rounded-lg p-1 hover:bg-zinc-900/30 transition-all min-h-[100px] flex items-center justify-center">
-                                            {videoStartFrame ? (
-                                                <div className="relative w-full h-full group">
-                                                    <img src={videoStartFrame} className="w-full h-full object-cover rounded" />
-                                                    <button onClick={() => setVideoStartFrame(null)} className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 text-xs">✕</button>
-                                                </div>
-                                            ) : (
-                                                <label className="cursor-pointer text-center w-full py-4">
-                                                    <span className="text-[10px] block text-zinc-500 font-bold mb-1">START</span>
-                                                    <IconUpload />
-                                                    <input type="file" accept="image/*" onChange={(e) => handleVideoImageUpload(setVideoStartFrame, e)} className="hidden" />
-                                                </label>
-                                            )}
+                                            <label className="flex-1 h-16 border border-dashed border-[#27272a] rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#18181b] hover:border-zinc-500 text-zinc-600 hover:text-zinc-400 relative overflow-hidden">
+                                                {videoEndFrame ? <img src={videoEndFrame} className="w-full h-full object-cover" /> : <span className="text-[10px]">End</span>}
+                                                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleVideoImageUpload(setVideoEndFrame, e)} />
+                                            </label>
                                         </div>
-                                        {/* End Frame */}
-                                        <div className="border border-dashed border-zinc-800 rounded-lg p-1 hover:bg-zinc-900/30 transition-all min-h-[100px] flex items-center justify-center">
-                                            {videoEndFrame ? (
-                                                <div className="relative w-full h-full group">
-                                                    <img src={videoEndFrame} className="w-full h-full object-cover rounded" />
-                                                    <button onClick={() => setVideoEndFrame(null)} className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 text-xs">✕</button>
-                                                </div>
-                                            ) : (
-                                                <label className="cursor-pointer text-center w-full py-4">
-                                                    <span className="text-[10px] block text-zinc-500 font-bold mb-1">END</span>
-                                                    <IconUpload />
-                                                    <input type="file" accept="image/*" onChange={(e) => handleVideoImageUpload(setVideoEndFrame, e)} className="hidden" />
-                                                </label>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
 
+                    </div>
+                </div>
+
+                {/* Footer Action */}
+                <div className="mt-auto p-4 border-t border-[#27272a]">
                     <button
                         onClick={studioMode === 'image' ? generateImage : generateVideo}
                         disabled={studioMode === 'image' ? (imageLoading || !imagePrompt) : (videoLoading || (!videoPrompt && videoMode === 'text'))}
-                        className="w-full py-4 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                        className="w-full py-3 bg-white text-black font-semibold text-xs rounded-lg hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        {imageLoading || videoLoading ? (
-                            <span className="flex items-center justify-center gap-2">
-                                <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
-                                Processing
-                            </span>
-                        ) : (
-                            <span className="flex items-center justify-center gap-2">
-                                <IconSparkles />
-                                Generate Output
-                            </span>
-                        )}
+                        {imageLoading || videoLoading ? 'Processing...' : 'Generate Asset'}
                     </button>
                 </div>
+            </aside>
 
+            {/* MAIN CANVAS */}
+            <main className="flex-1 bg-[#09090b] flex items-center justify-center p-8 overflow-hidden relative">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-[#09090b] to-[#09090b] opacity-50 pointer-events-none"></div>
 
-                {/* --- RIGHT PANEL: PREVIEW --- */}
-                <div className="flex flex-col gap-4 animate-in slide-in-from-right-4 duration-500 ease-out delay-75">
-                    <label className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Output Canvas</label>
-                    <div className="flex-1 bg-[#0f0f10] border border-white/5 rounded-2xl flex items-center justify-center overflow-hidden relative shadow-2xl min-h-[600px]">
+                <div className="relative max-w-4xl w-full aspect-video flex items-center justify-center rounded-2xl border border-[#27272a] bg-[#0c0c0e] shadow-2xl overflow-hidden">
 
-                        {/* Empty State */}
-                        {!imageResult && !videoResult && !imageLoading && !videoLoading && (
-                            <div className="text-center space-y-4 max-w-xs opacity-40">
-                                <div className="w-16 h-16 bg-white/5 rounded-2xl mx-auto flex items-center justify-center border border-white/5">
-                                    {studioMode === 'image' ? <IconImage /> : <IconVideo />}
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm font-medium text-zinc-300">Ready to Create</p>
-                                    <p className="text-xs text-zinc-600">Configure your parameters on the left to begin generation.</p>
-                                </div>
+                    {/* Placeholder */}
+                    {!imageResult && !videoResult && !imageLoading && !videoLoading && (
+                        <div className="flex flex-col items-center gap-4 opacity-20">
+                            <div className="w-16 h-16 bg-[#18181b] rounded-2xl flex items-center justify-center">
+                                <IconSparkles />
                             </div>
-                        )}
+                            <p className="text-sm font-medium text-zinc-500">Canvas Empty</p>
+                        </div>
+                    )}
 
-                        {/* Loading State Overlay (Optional, though button has loader) */}
+                    {/* Loader */}
+                    {(imageLoading || videoLoading) && (
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                            <p className="text-xs text-zinc-400 tracking-widest uppercase animate-pulse">Synthesizing...</p>
+                        </div>
+                    )}
 
-                        {/* Results */}
-                        {studioMode === 'image' && imageResult && (
-                            <img src={imageResult} alt="Generated" className="max-w-full max-h-full object-contain shadow-2xl rounded-lg animate-in fade-in zoom-in-95 duration-500" />
-                        )}
+                    {/* Image Result */}
+                    {studioMode === 'image' && imageResult && (
+                        <img src={imageResult} className="w-full h-full object-contain" alt="Generated" />
+                    )}
 
-                        {studioMode === 'video' && videoResult && (
-                            videoResult.startsWith('http') ? (
-                                <div className="text-center space-y-4">
-                                    <div className="text-6xl">🎉</div>
-                                    <a href={videoResult} target="_blank" className="px-6 py-3 bg-white text-black font-medium rounded-full text-sm hover:scale-105 transition-transform">Download Video</a>
-                                </div>
-                            ) : (
-                                <video src={videoResult} controls autoPlay loop className="max-w-full max-h-full rounded-lg shadow-2xl" />
-                            )
-                        )}
+                    {/* Video Result */}
+                    {studioMode === 'video' && videoResult && (
+                        videoResult.startsWith('http') ? (
+                            <a href={videoResult} target="_blank" className="px-6 py-3 bg-white text-black text-sm font-medium rounded-full hover:scale-105 transition-transform">Download Video</a>
+                        ) : (
+                            <video src={videoResult} controls autoPlay loop className="w-full h-full object-contain" />
+                        )
+                    )}
 
-                    </div>
                 </div>
-
             </main>
+
         </div>
     );
 }
