@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
-        const { prompt, modelId } = await req.json();
+        const { prompt, modelId, images } = await req.json();
         const apiKey = process.env.GOOGLE_API_KEY;
 
         if (!apiKey) {
@@ -17,7 +17,24 @@ export async function POST(req: Request) {
 
         try {
             console.log(`Attempting to generate with ${modelName}...`);
-            const result = await model.generateContent(prompt || "Generate a hyper-realistic infographic of a gourmet cheeseburger, deconstructed");
+
+            // Construct parts for multimodal or text-only request
+            let parts: any[] = [{ text: prompt || "Generate something amazing" }];
+
+            if (images && Array.isArray(images)) {
+                images.forEach((img: string) => {
+                    // Simple base64 extraction
+                    const base64Data = img.includes('base64,') ? img.split('base64,')[1] : img;
+                    parts.push({
+                        inlineData: {
+                            mimeType: "image/png",
+                            data: base64Data
+                        }
+                    });
+                });
+            }
+
+            const result = await model.generateContent(parts);
             const response = await result.response;
 
             // Check for image parts in the response (experimental/preview models)
