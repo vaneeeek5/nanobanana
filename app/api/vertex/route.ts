@@ -4,12 +4,12 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { prompt, imageBase64 } = body;
+        const { prompt, imageBase64, modelId } = body;
 
-        // Use environment variables or fallback to values from the RTF
+        // Use environment variables or fallback values
         const PROJECT_ID = process.env.GCP_PROJECT_ID || 'tilda-3-485901';
         const LOCATION = 'europe-west1';
-        const MODEL = 'gemini-2.5-flash-image';
+        const MODEL = modelId || 'gemini-2.5-flash-image';
 
         const vertexAI = new VertexAI({
             project: PROJECT_ID,
