@@ -1,46 +1,71 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { VertexAI } from '@google-cloud/vertexai';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
-        const apiKey = process.env.GOOGLE_API_KEY;
-        if (!apiKey) {
-            return NextResponse.json({ error: "GOOGLE_API_KEY is not configured" }, { status: 500 });
+        const body = await req.json();
+        const { prompt, mode, referenceImages } = body;
+
+        // Configuration from "Working Version"
+        const LOCATION = 'europe-west1'; // CRITICAL: This was the key difference
+        const MODEL_ID = 'gemini-2.5-flash-image';
+
+        let projectId = 'tilda-3-485901';
+        let googleAuthOptions;
+
+        if (process.env.VERTEX_CREDENTIALS) {
+            try {
+                const credentials = JSON.parse(process.env.VERTEX_CREDENTIALS);
+                googleAuthOptions = { credentials };
+                projectId = credentials.project_id || projectId;
+            } catch (e) {
+                console.error("Failed to parse VERTEX_CREDENTIALS", e);
+            }
         }
 
-        const body = await req.json();
-        const { prompt, mode } = body;
-
-        const genAI = new GoogleGenerativeAI(apiKey);
-
-        // Mapping based on user request
-        // Nano Banana -> Gemini 2.5 Flash Image
-        // Nano Banana Pro -> Gemini 3 Pro Image Preview
-        const modelId = mode === 'fast' ? 'gemini-2.5-flash-image' : 'gemini-3-pro-image-preview';
-
-        const model = genAI.getGenerativeModel({ model: modelId });
-
-        console.log(`[NanoBanana-Gemini] Generating with ${modelId}...`);
-
-        // Standard text generation. 
-        // Note: Actual "Image Generation" via Gemini API often requires specific tools or `imagen-3` model directly.
-        // If the user insists "Nano Banana IS Gemini 2.0 Flash", they might expect text description?
-        // OR they expect the multimodal output handling.
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-
-        return NextResponse.json({
-            // If it's text-only model, we return text. 
-            // The frontend expects { image: base64 }. 
-            // We will send a placeholder image or the text if no image.
-            text: text,
-            warning: "Gemini 2.0 Flash (Text) used. Image generation requires Imagen model."
+        const vertexAI = new VertexAI({
+            project: projectId,
+            location: LOCATION,
+            googleAuthOptions: googleAuthOptions
         });
 
+        const model = vertexAI.getGenerativeModel({ model: MODEL_ID });
+
+        console.log(`[NanoBanana-Vertex] Generating with ${MODEL_ID} in ${LOCATION}...`);
+
+        const parts: any[] = [{ text: prompt }];
+
+        if (referenceImages && referenceImages.length > 0) {
+            referenceImages.forEach((img: string) => {
+                // Cleanup base64 if needed (legacy code did this)
+                const cleanBase64 = img.replace(/^data:image\/\w+;base64,/, "");
+                parts.push({
+                    inlineData: {
+                        mimeType: "image/png",
+                        data: cleanBase64
+                    }
+                });
+            });
+        }
+
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts }]
+        });
+
+        const responseParts = result.response.candidates?.[0]?.content?.parts || [];
+        const imagePart = responseParts.find((p: any) => p.inlineData?.data);
+
+        if (imagePart) {
+            return NextResponse.json({
+                image: `data:image/png;base64,${imagePart.inlineData?.data}`,
+                metadata: result.response.usageMetadata
+            });
+        }
+
+        return NextResponse.json({ error: "No image generated." }, { status: 500 });
+
     } catch (error: any) {
-        console.error('[NanoBanana-Gemini API] Error:', error);
+        console.error('[NanoBanana-Vertex API] Error:', error);
         return NextResponse.json(
             { error: error.message || 'Internal Server Error' },
             { status: 500 }

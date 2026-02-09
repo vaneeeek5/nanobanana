@@ -16,18 +16,29 @@ export async function POST(req: Request) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // Accessing model. 
+        // Accessing model.
         // For video, we might need to use a specific method or model.
         // If SDK doesn't support 'generateVideo' natively yet, we might need to rely on `generateContent` with a tailored prompt
         // or just return a placeholder explanation if it fails.
         // The user linked a blog post saying it IS available.
 
-        // Let's try to map it to a request.
-        // If this fails, we will catch it.
-        const model = genAI.getGenerativeModel({ model: 'veo-3.1-generate-preview' });
+        // User specified model: veo-3.1-generate-preview
+        const modelId = 'veo-3.1-generate-preview';
+        const model = genAI.getGenerativeModel({ model: modelId });
 
-        console.log(`[Veo-Gemini] Generating with veo-3.1-generate-preview...`);
-        const result = await model.generateContent(prompt);
+        console.log(`[Veo-Gemini] Generating with ${modelId}...`);
+
+        let result;
+        try {
+            result = await model.generateContent(prompt);
+        } catch (genError: any) {
+            console.error(`[Veo-Gemini] Generation failed for ${modelId}:`, genError.message);
+            // Return formatted error to UI so user knows model is unavailable/invalid
+            return NextResponse.json({
+                error: `Model ${modelId} unavailable or returned error: ${genError.message}. Check access or model ID.`
+            }, { status: 404 });
+        }
+
         const response = await result.response;
 
         // Inspect response for video URI
