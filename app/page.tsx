@@ -165,11 +165,11 @@ export default function Home() {
                                 <div className="grid grid-cols-2 gap-2">
                                     <button onClick={() => setImageModel('fast')} className={`p-3 rounded-lg border text-left transition-all relative overflow-hidden group ${imageModel === 'fast' ? 'bg-[#18181b] border-white/20' : 'border-[#27272a] hover:bg-[#18181b] text-zinc-500'}`}>
                                         <div className="flex items-center gap-2 mb-1 text-xs font-semibold text-zinc-200"><IconZap /> Nano Banana</div>
-                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-2.5-flash-image</div>
+                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-2.5 (Vertex EU)</div>
                                     </button>
                                     <button onClick={() => setImageModel('pro')} className={`p-3 rounded-lg border text-left transition-all relative overflow-hidden group ${imageModel === 'pro' ? 'bg-[#18181b] border-white/20' : 'border-[#27272a] hover:bg-[#18181b] text-zinc-500'}`}>
                                         <div className="flex items-center gap-2 mb-1 text-xs font-semibold text-zinc-200"><IconStar /> Nano Banana Pro</div>
-                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-3.0-pro-image-preview</div>
+                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-3.0 (AI Studio)</div>
                                     </button>
                                 </div>
                             </div>
