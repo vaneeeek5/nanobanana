@@ -79,7 +79,7 @@ export async function POST(req: Request) {
             const parts = response.candidates?.[0]?.content?.parts || [];
             const imagePart = parts.find((p: any) => p.inlineData?.data);
 
-            if (imagePart) {
+            if (imagePart && imagePart.inlineData) {
                 console.log("[Imagen-Pro] Found image data!");
                 return NextResponse.json({
                     image: `data:${imagePart.inlineData.mimeType || 'image/png'};base64,${imagePart.inlineData.data}`,
