@@ -15,6 +15,7 @@ export default function Home() {
     // --- APP STATE ---
     type StudioMode = 'image' | 'video';
     const [studioMode, setStudioMode] = useState<StudioMode>('image');
+    const [backendSource, setBackendSource] = useState<'vertex' | 'studio'>('vertex');
 
     // --- IMAGE STUDIO STATE ---
     type ImageModel = 'fast' | 'pro';
