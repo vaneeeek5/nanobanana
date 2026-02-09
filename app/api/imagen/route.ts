@@ -73,14 +73,25 @@ export async function POST(req: Request) {
             const result = await model.generateContent(prompt);
             const response = await result.response;
 
-            // Check if we got an image back (inlineData)
-            // Note: Gemini API standard output usually doesn't do inlineData for images unless it's specific endpoint.
-            // If this fails, user might see text.
+            console.log("[Imagen-Pro] Raw Response Candidates:", JSON.stringify(response.candidates, null, 2));
+
+            // Attempt to extract image from standard gemini content parts
+            const parts = response.candidates?.[0]?.content?.parts || [];
+            const imagePart = parts.find((p: any) => p.inlineData?.data);
+
+            if (imagePart) {
+                console.log("[Imagen-Pro] Found image data!");
+                return NextResponse.json({
+                    image: `data:${imagePart.inlineData.mimeType || 'image/png'};base64,${imagePart.inlineData.data}`,
+                    metadata: response.usageMetadata
+                });
+            }
+
+            // Fallback if no image found
             return NextResponse.json({
-                text: response.text(),
-                // Mocking image response if the API returns text description (common in previews)
-                // Use a valid check if real image data exists in candidates
-                warning: "Using AI Studio. Check if image is returned or text description."
+                warning: "Model returned no image data.",
+                rawResponse: response.text ? response.text() : "No text",
+                candidates: response.candidates
             });
         }
 
