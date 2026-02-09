@@ -61,8 +61,8 @@ export async function POST(req: Request) {
             if (!apiKey) return NextResponse.json({ error: "GOOGLE_API_KEY missing" }, { status: 500 });
 
             const genAI = new GoogleGenerativeAI(apiKey);
-            // User suggestion: maybe without "-preview"?
-            const MODEL_ID = 'gemini-3.0-pro-image';
+            // Correct ID from user's list-models output
+            const MODEL_ID = 'gemini-3-pro-image-preview';
 
             const model = genAI.getGenerativeModel({ model: MODEL_ID });
 
