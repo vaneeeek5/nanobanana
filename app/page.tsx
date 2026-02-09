@@ -64,7 +64,8 @@ export default function Home() {
                 body: JSON.stringify({
                     prompt: imagePrompt,
                     mode: imageModel,
-                    referenceImages: referenceImages
+                    referenceImages: referenceImages,
+                    backendSource // Pass selected backend
                 }),
             });
             const data = await res.json();
@@ -87,10 +88,15 @@ export default function Home() {
     const generateVideo = async () => {
         setVideoLoading(true);
         setVideoResult(null);
+        if (!videoPrompt && videoMode === 'text') { // Added check
+            setVideoLoading(false);
+            return;
+        }
         try {
             const payload: any = {
                 prompt: videoPrompt,
-                mode: videoMode
+                mode: videoMode,
+                backendSource // Pass selected backend
             };
 
             if (videoMode === 'image') payload.image = videoInputImage;
@@ -135,6 +141,22 @@ export default function Home() {
                     </div>
                 </div>
 
+                {/* GLOBAL BACKEND SWITCH */}
+                <div className="p-1 bg-[#18181b] rounded-lg flex border border-[#27272a]">
+                    <button
+                        onClick={() => setBackendSource('vertex')}
+                        className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${backendSource === 'vertex' ? 'bg-[#27272a] text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
+                    >
+                        Vertex AI
+                    </button>
+                    <button
+                        onClick={() => setBackendSource('studio')}
+                        className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${backendSource === 'studio' ? 'bg-[#27272a] text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
+                    >
+                        AI Studio
+                    </button>
+                </div>
+
                 {/* Main Controls Container */}
                 <div className="p-4 flex flex-col gap-6">
 
@@ -165,11 +187,11 @@ export default function Home() {
                                 <div className="grid grid-cols-2 gap-2">
                                     <button onClick={() => setImageModel('fast')} className={`p-3 rounded-lg border text-left transition-all relative overflow-hidden group ${imageModel === 'fast' ? 'bg-[#18181b] border-white/20' : 'border-[#27272a] hover:bg-[#18181b] text-zinc-500'}`}>
                                         <div className="flex items-center gap-2 mb-1 text-xs font-semibold text-zinc-200"><IconZap /> Nano Banana</div>
-                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-2.5 (Vertex EU)</div>
+                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-2.5 ({backendSource === 'vertex' ? 'Vertex EU' : 'Studio'})</div>
                                     </button>
                                     <button onClick={() => setImageModel('pro')} className={`p-3 rounded-lg border text-left transition-all relative overflow-hidden group ${imageModel === 'pro' ? 'bg-[#18181b] border-white/20' : 'border-[#27272a] hover:bg-[#18181b] text-zinc-500'}`}>
                                         <div className="flex items-center gap-2 mb-1 text-xs font-semibold text-zinc-200"><IconStar /> Nano Banana Pro</div>
-                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-3-pro-image-preview (AI Studio)</div>
+                                        <div className="text-[10px] text-zinc-500 leading-tight">gemini-3-pro ({backendSource === 'vertex' ? 'Vertex US' : 'Studio'})</div>
                                     </button>
                                 </div>
                             </div>
