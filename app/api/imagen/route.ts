@@ -6,12 +6,13 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { prompt, mode, referenceImages } = body;
 
-        // Configuration from "Working Version" & User Request
-        const LOCATION = 'europe-west1';
+        // Configuration
+        // Fast: gemini-2.5-flash-image (Working in Europe)
+        // Pro:  gemini-3.0-pro-image-preview (Likely US-Central1 for preview)
 
-        // Fast: gemini-2.5-flash-image (from working rtf)
-        // Pro: nano-banana-pro-preview (user request)
-        const MODEL_ID = mode === 'fast' ? 'gemini-2.5-flash-image' : 'nano-banana-pro-preview';
+        const isFast = mode === 'fast';
+        const MODEL_ID = isFast ? 'gemini-2.5-flash-image' : 'gemini-3.0-pro-image-preview';
+        const LOCATION = isFast ? 'europe-west1' : 'us-central1';
 
         let projectId = 'tilda-3-485901';
         let googleAuthOptions;
