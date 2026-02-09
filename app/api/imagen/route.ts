@@ -6,9 +6,12 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { prompt, mode, referenceImages } = body;
 
-        // Configuration from "Working Version"
-        const LOCATION = 'europe-west1'; // CRITICAL: This was the key difference
-        const MODEL_ID = 'gemini-2.5-flash-image';
+        // Configuration from "Working Version" & User Request
+        const LOCATION = 'europe-west1';
+
+        // Fast: gemini-2.5-flash-image (from working rtf)
+        // Pro: nano-banana-pro-preview (user request)
+        const MODEL_ID = mode === 'fast' ? 'gemini-2.5-flash-image' : 'nano-banana-pro-preview';
 
         let projectId = 'tilda-3-485901';
         let googleAuthOptions;
