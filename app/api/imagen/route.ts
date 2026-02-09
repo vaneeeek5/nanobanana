@@ -9,9 +9,10 @@ export async function POST(req: Request) {
 
         const isFast = mode === 'fast';
         // Model IDs
-        // Note: Studio might use slightly different names sometimes, but typically they align for latest models.
-        const modelIdVertex = isFast ? 'gemini-2.5-flash-image' : 'gemini-3-pro-image-preview';
-        const modelIdStudio = isFast ? 'gemini-2.5-flash' : 'gemini-3-pro-image-preview'; // Flash might be just 'gemini-2.5-flash' in Studio? Checking list... yes it was 'gemini-2.5-flash'.
+        // VERTEX: Use correct Imagen 3 ID for Pro
+        const modelIdVertex = isFast ? 'gemini-2.5-flash-image' : 'imagen-3.0-generate-001';
+        // STUDIO: Use the -image variant for Flash too (from user list)
+        const modelIdStudio = isFast ? 'gemini-2.5-flash-image' : 'gemini-3-pro-image-preview';
 
         const MODEL_ID = backendSource === 'vertex' ? modelIdVertex : modelIdStudio;
 
